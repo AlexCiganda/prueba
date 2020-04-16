@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1, maximum-scale=1,user-scalable=no"
+    />
+    <title>Visualizador Acciones Directas</title>
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/4.14/esri/themes/light/main.css"
+    />
+    <style>
+      html,
+      body,
+      #viewDiv {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+	}
+      #titulo {
+        z-index: 99;
+        position: absolute;
+        top: 15px;
+        left: 5%;
+        padding: 15px;
+        margin-left: 10px;
+        height: 40px;
+        width: 300px;
+        background: rgba(2, 123, 17, 0.8);
+	   font-weight: bold;
+        color: white;
+      }
+      
+    </style>
+    <script src="https://js.arcgis.com/4.14/"></script>
+    <script>
+      require([
+        "esri/WebMap",
+        "esri/views/MapView",
+	   "esri/widgets/Legend",
+        "esri/widgets/Bookmarks",
+		"esri/widgets/Fullscreen",
+        "esri/widgets/Expand"
+      ], function(WebMap, MapView, Legend, Bookmarks, Fullscreen, Expand) {
+        const webmap = new WebMap({
+          portalItem: {
+            id: "e39aa179d1aa48cda24cc0b5245247b8"
+          }
+        });
+		
+		var view = new MapView({
+          map: webmap,
+          popup: {
+            dockEnabled: true,
+            dockOptions: {
+              buttonEnabled: false,
+              breakpoint: false,
+			  position:"bottom-left"
+            }
+          },
+          container: "viewDiv"
+        });
+		
+		 const legend = new Expand({
+          content: new Legend({
+            view: view,
+            style: "card" // o 'classic'
+          }),
+		  expandTooltip:"Abrir Leyenda",
+		  collapseTooltip:"Cerrar Leyenda",
+          expanded: false
+        });
+        
+        const bookmarks = new Bookmarks({
+          view: view,
+		  
+          // no editar los bookmarks
+          editingEnabled: false
+        });
+
+        const bkExpand = new Expand({
+          view: view,
+          content: bookmarks,
+		  expandTooltip:"Zoom a las Acciones",
+		  collapseTooltip:"Cerrar Zoom",
+          expanded: false
+        });
+		
+		//Fullscreen
+		fullscreen = new Fullscreen({
+		view: view
+		});
+		view.ui.add(fullscreen, "top-right");
+        // Listado de bookmark en la esquina superior derecha
+        view.ui.add(bkExpand, "top-right");
+		view.ui.add(legend, "top-right");
+		
+		
+        // poner todos los bookmarks??
+        webmap.when(function() {
+          if (webmap.bookmarks && webmap.bookmarks.length) {
+            console.log("Bookmarks: ", webmap.bookmarks.length);
+          } else {
+            console.log("No bookmarks in this webmap.");
+          }
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <div id="viewDiv"></div>
+    <div id="titulo" class="esri-widget">
+      VISUALIZADOR ACCIONES DIRECTAS
+    </div>
+  </body>
+</html>
